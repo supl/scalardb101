@@ -1,11 +1,16 @@
 package getstarted;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
+  public static void main(String[] args) throws Exception {
+    Worklog worklog = new Worklog();
+
+    if (args.length > 0) {
+      String log = args[0];
+      worklog.log(log);
+    } else {
+      worklog.today();
     }
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
-    }
+    worklog.close();
+  }
 }
