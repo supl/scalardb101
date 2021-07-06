@@ -1,0 +1,16 @@
+{
+  "plenty.worklog": {
+    "transaction": false,
+    "partition-key": [
+      "date"
+    ],
+    "clustering-key": [
+      "timestamp"
+    ],
+    "columns": {
+      "date": "TEXT",
+      "timestamp": "BIGINT",
+      "log": "TEXT"
+    }
+  }
+}
