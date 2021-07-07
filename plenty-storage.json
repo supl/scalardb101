@@ -12,5 +12,16 @@
       "timestamp": "BIGINT",
       "log": "TEXT"
     }
+  },
+  "plenty.workcount": {
+    "transaction": false,
+    "partition-key": [
+      "date"
+    ],
+    "clustering-key": [],
+    "columns": {
+      "date": "TEXT",
+      "count": "INT"
+    }
   }
 }
