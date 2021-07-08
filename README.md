@@ -30,4 +30,5 @@ to execute the CLI.
 # Use
 
 Use `app <log>` to log a work. It can record as many logs as you want.
-Use `app` to display today's log.
+
+Use `app` to display today's logs.
