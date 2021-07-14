@@ -41,30 +41,42 @@ public class Worklog {
   }
 
   public void log(String log) throws Exception {
-    DistributedTransaction tx = transaction.start();
+    for (int retry = 3; retry > 0; retry--) {
+      try {
+        DistributedTransaction tx = transaction.start();
 
-    Key pKey =
-        new Key(new TextValue("date", DateTimeFormatter.BASIC_ISO_DATE.format(LocalDate.now())));
-    Key cKey = new Key(new BigIntValue("timestamp", System.currentTimeMillis() / 1000));
+        Key pKey = new Key(
+            new TextValue("date", DateTimeFormatter.BASIC_ISO_DATE.format(LocalDate.now())));
+        Key cKey = new Key(new BigIntValue("timestamp", System.currentTimeMillis() / 1000));
 
-    Put put1 = new Put(pKey, cKey).withValue(new TextValue("log", log)).forNamespace("plenty")
-        .forTable("worklog");
+        Put put1 = new Put(pKey, cKey).withValue(new TextValue("log", log)).forNamespace("plenty")
+            .forTable("worklog");
 
-    int count = 0;
-    Get get = new Get(pKey).forNamespace("plenty").forTable("workcount");
-    Optional<Result> result = tx.get(get);
+        int count = 0;
+        Get get = new Get(pKey).forNamespace("plenty").forTable("workcount");
+        Optional<Result> result = tx.get(get);
 
-    if (result.isPresent()) {
-      count = ((IntValue) result.get().getValue("count").get()).get();
+        if (result.isPresent()) {
+          count = ((IntValue) result.get().getValue("count").get()).get();
+        }
+        count += 1;
+        Put put2 = new Put(pKey).withValue(new IntValue("count", count)).forNamespace("plenty")
+            .forTable("workcount");
+
+        try {
+          tx.put(put1);
+          tx.put(put2);
+          tx.commit();
+        } catch (CrudException | CommitException | UnknownTransactionStatusException e) {
+          tx.abort();
+          continue;
+        }
+      } catch (TransactionException e) {
+        continue;
+      }
+
+      break;
     }
-    count += 1;
-    Put put2 = new Put(pKey).withValue(new IntValue("count", count)).forNamespace("plenty")
-        .forTable("workcount");
-
-    tx.put(put1);
-    tx.put(put2);
-
-    tx.commit();
   }
 
   public void today() throws Exception {
@@ -95,10 +107,12 @@ public class Worklog {
           tx.commit();
         } catch (CrudException | CommitException | UnknownTransactionStatusException e) {
           tx.abort();
+          continue;
         }
       } catch (TransactionException e) {
         continue;
       }
+
 
       break;
     }
