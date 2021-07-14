@@ -113,7 +113,6 @@ public class Worklog {
         continue;
       }
 
-
       break;
     }
   }
