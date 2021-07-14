@@ -80,7 +80,7 @@ public class Worklog {
       BigIntValue timestampValue = (BigIntValue) result.getValue("timestamp").get();
       TextValue logValue = (TextValue) result.getValue("log").get();
       Date d = new Date(timestampValue.get() * 1000);
-      System.out.println(d.toString() + ": " + logValue.getString().get());
+      System.out.println(d + ": " + logValue.getString().get());
     }
 
     int count = 0;
