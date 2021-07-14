@@ -73,15 +73,13 @@ public class Worklog {
         new Key(new TextValue("date", DateTimeFormatter.BASIC_ISO_DATE.format(LocalDate.now())));
     Scan scan = new Scan(pKey).forNamespace("plenty").forTable("worklog");
     Scanner scanner = storage.scan(scan);
-    Iterator<Result> iterator = scanner.iterator();
 
-    while (iterator.hasNext()) {
-      Result result = iterator.next();
+    scanner.forEach(result -> {
       BigIntValue timestampValue = (BigIntValue) result.getValue("timestamp").get();
       TextValue logValue = (TextValue) result.getValue("log").get();
       Date d = new Date(timestampValue.get() * 1000);
       System.out.println(d + ": " + logValue.getString().get());
-    }
+    });
 
     int count = 0;
     Get get = new Get(pKey).forNamespace("plenty").forTable("workcount");
