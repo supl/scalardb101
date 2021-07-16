@@ -1,9 +1,0 @@
-#!/bin/bash
-case $1 in
-    up)
-        docker run -d --name cassandra -p 127.0.0.1:9042:9042 cassandra:3.11
-        ;;
-    down)
-        docker rm -fv cassandra
-        ;;
-esac
